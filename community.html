@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualCare - Community Forum</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #4CAF50; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; }
+        .post { border: 1px solid #ddd; border-radius: 8px; padding: 10px 15px; margin-top: 10px; background: #f3f3f3; }
+        .title { font-weight: bold; color: #388E3C; }
+        .reply { margin-left: 20px; border-left: 3px solid #4CAF50; padding-left: 10px; margin-top: 5px; background: #e8f5e9; }
+        .feedback { border: 2px solid #4CAF50; padding: 15px; border-radius: 8px; background: #e8f5e9; }
+        .feedback-list { background: #f0f0f0; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 20px; }
+        .feedback-item { background: #fff; padding: 10px; border-bottom: 1px solid #ddd; }
+        .back-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .back-btn span {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <a href="front.html" class="back-btn">
+        <span>&larr;</span> Back to Home
+    </a>
+
+    <div class="container">
+        <h1>EMPATHVR Community Forum</h1>
+
+        <div class="section">
+            <h2>General Discussion</h2>
+            <div class="post">
+                <div class="title">How does VR exposure therapy help with anxiety?</div>
+                <p>I've been curious about how VR exposure therapy compares to traditional methods. Has anyone tried it?</p>
+                <div class="reply">Yes! I found it really helpful for my social anxiety. The controlled environment felt safer than real-life scenarios.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Our Proposed Device</h2>
+            <div class="post">
+                <div class="title">Feedback on Heartbeat Monitor Feature</div>
+                <p>We'd love to hear your thoughts on our device that pauses VR therapy when anxiety spikes. Any suggestions for improvement?</p>
+                <div class="reply">Consider adding vibration feedback to alert users gently before switching environments. It might feel less abrupt.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Research & Resources</h2>
+            <div class="post">
+                <div class="title">Helpful Research on VR Therapy</div>
+                <p>Here's a link to a great article about the effectiveness of VR therapy for treating phobias: <a href="#">Read More</a></p>
+            </div>
+        </div>
+
+        <div class="section feedback">
+            <h2>Feedback & Suggestions</h2>
+            <p>Have ideas for improving the platform or our device? Let us know!</p>
+            <form id="feedbackForm">  <!-- ✅ Added ID -->
+                <label for="feedback">Your Feedback:</label><br>
+                <textarea id="feedback" rows="4" cols="50" placeholder="Share your thoughts..."></textarea><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <div class="section feedback-list">
+            <h2>Previous Feedback</h2>
+        </div>
+
+        <div class="section">
+            <h2>Contact Us</h2>
+            <p>For inquiries, contact us at <strong>support@empathvr.com</strong></p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('feedbackForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const feedback = document.getElementById('feedback').value.trim();
+
+                if (!feedback) {
+                    alert('⚠️ Please enter some feedback before submitting.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:3000/feedback', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: feedback })
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Feedback submitted successfully!');
+                        document.getElementById('feedback').value = ''; // Clear input
+                        loadFeedbacks(); // Reload feedback list
+                    } else {
+                        alert('❌ Error: Something went wrong.');
+                    }
+                } catch (error) {
+                    alert('❌ Network error: ' + error.message);
+                }
+            });
+
+            async function loadFeedbacks() {
+                try {
+                    const response = await fetch('http://localhost:3000/feedback'); 
+                    const feedbacks = await response.json();
+
+                    const feedbackContainer = document.querySelector('.feedback-list');
+                    feedbackContainer.innerHTML = '<h2>Previous Feedback</h2>';
+                    
+                    feedbacks.forEach(feedback => {
+                        const item = document.createElement('div');
+                        item.classList.add('feedback-item');
+                        item.textContent = feedback.message;
+                        feedbackContainer.appendChild(item);
+                    });
+                } catch (error) {
+                    console.error('Error loading feedback:', error);
+                    alert('❌ Failed to load feedback.');
+                }
+            }
+
+            // Load feedback when the page opens
+            loadFeedbacks();
+        });
+    </script>
+</body>
+</html>
